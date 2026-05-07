@@ -1,0 +1,311 @@
+:root{
+  --bg:#0b1220;
+  --panel:#0f172a;
+  --panel2:#0b1326;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --brand:#1f6feb;
+  --brand2:#0ea5e9;
+  --line:rgba(255,255,255,0.08);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+  background: radial-gradient(1000px 600px at 20% 0%, rgba(14,165,233,0.18), transparent 60%),
+    radial-gradient(900px 600px at 90% 10%, rgba(31,111,235,0.16), transparent 55%),
+    var(--bg);
+  color:var(--text);
+}
+
+.shell{
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px;
+  display:grid;
+  grid-template-columns: 380px 1fr;
+  gap: 18px;
+}
+
+.card{
+  border:1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border-radius: 14px;
+  overflow:hidden;
+}
+
+.card h2{
+  margin:0;
+  padding:14px 14px 10px;
+  font-size: 14px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(229,231,235,0.9);
+  border-bottom:1px solid var(--line);
+  background: rgba(0,0,0,0.18);
+}
+
+.form{
+  padding: 14px;
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+}
+
+.row{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+label{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(229,231,235,0.88);
+}
+
+input, select, textarea{
+  border: 1px solid var(--line);
+  background: rgba(0,0,0,0.22);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 10px;
+  outline: none;
+}
+
+textarea{min-height: 86px; resize: vertical}
+input::placeholder, textarea::placeholder{color: rgba(156,163,175,0.7)}
+
+.actions{
+  display:flex;
+  gap:10px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+.btn{
+  appearance:none;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: linear-gradient(180deg, rgba(31,111,235,0.95), rgba(31,111,235,0.75));
+  color:white;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor:pointer;
+  font-weight: 650;
+  letter-spacing: .01em;
+}
+.btn.secondary{
+  background: rgba(255,255,255,0.06);
+}
+.btn:disabled{opacity:0.65; cursor:not-allowed}
+
+.hint{
+  color: rgba(156,163,175,0.9);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.previewWrap{
+  padding: 14px;
+  display:flex;
+  justify-content:center;
+  overflow:auto;
+}
+
+/* A4 @ 96dpi: 794 x 1123 px */
+.poster{
+  width: 794px;
+  height: 1080px;
+  background: #fff;
+  color: #0b1220;
+  border-radius: 12px;
+  overflow:hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.40);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.poster .topImage{
+  height: 430px;
+  position: relative;
+  background: linear-gradient(135deg, rgba(14,165,233,0.20), rgba(31,111,235,0.12));
+}
+
+.poster .topImage img{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  display:block;
+}
+
+.poster .topOverlay{
+  position:absolute;
+  inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.0) 55%, rgba(255,255,255,0.0));
+}
+
+.poster .body{
+  flex: 1;
+  padding: 26px 54px 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brandRow{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.brandLogo{
+  width: 520px;
+  height: 96px;
+  border-radius: 0;
+  background: transparent;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.brandLogoImg{
+  width: fit-content;
+  max-width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.brandLogoImg.defaultLogo{
+  object-fit: contain;
+  transform: none;
+}
+
+.title{
+  /* shrink-to-content like the browser tweak */
+  width: 100%;
+  margin: 14px 0 0;
+  text-align:center;
+  font-size: 34px;
+  letter-spacing: .14em;
+  font-weight: 900;
+  color:#0b4d8a;
+}
+.title sup{
+  font-size: .55em;
+  vertical-align: super;
+  letter-spacing: 0;
+}
+
+.subtitle{
+  margin: 18px 0 0;
+  text-align:center;
+  font-size: 27px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  letter-spacing: .18em;
+  font-weight: 700;
+  color:#0f172a;
+}
+
+.details{
+  margin-top: 22px;
+  margin-bottom: 0;
+  max-width: 680px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  display:grid;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  gap: 26px;
+  align-items:start;
+  font-size: 20px;
+}
+
+/* Only center the QR column heading */
+.details .detailCol:nth-child(3) h3{
+  text-align: center;
+  justify-content: center;
+}
+
+.detailCol h3{
+  margin:0;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 1);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 18px;
+  letter-spacing: .08em;
+  font-weight: 800;
+  color:#0f172a;
+  white-space: normal;
+}
+.detailCol .value{
+  margin-top: 10px;
+  text-align: left;
+  font-size: 17px;
+  line-height: 1.35;
+  color:#0f172a;
+  white-space: pre-line;
+}
+
+.qrBox{
+  width: 200px;
+  height: 200px;
+  border: 2px solid rgba(15,23,42,0.10);
+  border-radius: 14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background: #fff;
+}
+.qrBox img{
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+}
+
+#qrImg{
+  min-width: 180px;
+  max-width: 180px;
+  width: 100px;
+}
+
+.footer{
+  margin-top: auto;
+  height: 84px;
+  background: linear-gradient(90deg, rgba(11,74,141,1), rgba(11,74,141,1));
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 0 36px;
+  font-size: 14px;
+  letter-spacing: .02em;
+}
+
+.footer .item{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  opacity: .96;
+}
+
+.dot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.9);
+}
+
+@media (max-width: 1100px){
+  .shell{grid-template-columns: 1fr; }
+  /* Keep poster at true A4 pixels so exports are correct.
+     Only the surrounding layout stacks on small screens. */
+}
+

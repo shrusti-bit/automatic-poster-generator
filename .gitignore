@@ -1,0 +1,22 @@
+node_modules/
+dist/
+
+# local exports / artifacts
+*.pdf
+*.png
+*.jpg
+*.jpeg
+
+# but keep required assets tracked
+!public/*.png
+!public/*.jpg
+!public/*.jpeg
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
