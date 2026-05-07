@@ -232,6 +232,15 @@ input::placeholder, textarea::placeholder{color: rgba(156,163,175,0.7)}
   justify-content: center;
 }
 
+/* Center the "To Shelter" column (heading + value) */
+.details .detailCol:nth-child(2) h3{
+  text-align: center;
+  justify-content: center;
+}
+.details .detailCol:nth-child(2) .value{
+  text-align: center;
+}
+
 .detailCol h3{
   margin:0;
   text-align: left;
