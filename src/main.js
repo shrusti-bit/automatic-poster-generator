@@ -68,7 +68,19 @@ const state = {
   logoDataUrl: ""
 };
 
+function escapeAttrValue(s) {
+  // Minimal escaping for use inside an attribute selector.
+  return String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
 function render() {
+  const active = document.activeElement;
+  const activeKey = active?.getAttribute?.("data-key") || "";
+  const canRestoreSelection =
+    active && typeof active.selectionStart === "number" && typeof active.selectionEnd === "number";
+  const selectionStart = canRestoreSelection ? active.selectionStart : null;
+  const selectionEnd = canRestoreSelection ? active.selectionEnd : null;
+
   const houseNoNum = Number(state.houseNo || 0) || 0;
   const ord = ordinalSuffix(houseNoNum);
   const ordMatch = String(ord).match(/^(\d+)([a-z]+)$/i);
@@ -189,6 +201,26 @@ function render() {
   const poster = document.getElementById("poster");
   poster.style.width = `${A4_WIDTH_PX}px`;
   poster.style.height = `${A4_HEIGHT_PX}px`;
+
+  // Mobile UX: preserve focus across rerenders so the keyboard doesn't dismiss.
+  if (activeKey) {
+    const next = document.querySelector(`[data-key="${escapeAttrValue(activeKey)}"]`);
+    if (next && typeof next.focus === "function") {
+      next.focus({ preventScroll: true });
+      if (
+        canRestoreSelection &&
+        typeof next.setSelectionRange === "function" &&
+        selectionStart !== null &&
+        selectionEnd !== null
+      ) {
+        try {
+          next.setSelectionRange(selectionStart, selectionEnd);
+        } catch {
+          // Some input types (e.g. datetime-local) don't support selection ranges.
+        }
+      }
+    }
+  }
 }
 
 function detailCol(title, value) {
@@ -221,6 +253,7 @@ function fieldText(labelText, key, placeholder = "") {
   return el("label", {}, [
     el("span", { text: labelText }),
     el("input", {
+      "data-key": key,
       value: state[key] ?? "",
       placeholder,
       oninput: (e) => {
@@ -234,18 +267,24 @@ function fieldText(labelText, key, placeholder = "") {
 function fieldTextarea(labelText, key, placeholder = "") {
   return el("label", {}, [
     el("span", { text: labelText }),
-    el("textarea", {
-      placeholder,
-      oninput: (e) => {
-        state[key] = e.target.value;
-        render();
-      }
-    }, [document.createTextNode(state[key] ?? "")])
+    el(
+      "textarea",
+      {
+        "data-key": key,
+        placeholder,
+        oninput: (e) => {
+          state[key] = e.target.value;
+          render();
+        }
+      },
+      [document.createTextNode(state[key] ?? "")]
+    )
   ]);
 }
 
 function fieldSelect(labelText, key, options) {
   const select = el("select", {
+    "data-key": key,
     onchange: (e) => {
       state[key] = e.target.value;
       render();
@@ -264,6 +303,7 @@ function fieldDatetime(labelText, key) {
     el("span", { text: labelText }),
     el("input", {
       type: "datetime-local",
+      "data-key": key,
       value: state[key] ?? "",
       oninput: (e) => {
         state[key] = e.target.value;
@@ -278,6 +318,7 @@ function fieldFile(labelText, key, accept = "*/*") {
     el("span", { text: labelText }),
     el("input", {
       type: "file",
+      "data-key": key,
       accept,
       onchange: async (e) => {
         const file = e.target.files?.[0];
