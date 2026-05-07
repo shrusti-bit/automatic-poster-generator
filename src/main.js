@@ -104,7 +104,7 @@ function render() {
             fieldText("QR value (maps link)", "qrValue", "https://maps.app.goo.gl/...")
           ]),
           el("div", { class: "row" }, [
-            fieldFile("Top photo (optional)", "topImageDataUrl", "image/*"),
+            fieldFile("House photo (optional)", "topImageDataUrl", "image/*"),
             fieldFile("Logo (optional)", "logoDataUrl", "image/*")
           ]),
           el("div", { class: "row" }, [
@@ -137,10 +137,10 @@ function render() {
           el("div", { class: "poster", id: "poster" }, [
             el("div", { class: "topImage" }, [
               state.topImageDataUrl
-                ? el("img", { src: state.topImageDataUrl, alt: "Top photo" })
+                ? el("img", { src: state.topImageDataUrl, alt: "House photo" })
                 : el("img", {
-                    src: `${BASE}invitation-template.png`,
-                    alt: "Template photo"
+                    src: `${BASE}house-placeholder.svg`,
+                    alt: "House placeholder"
                   }),
               el("div", { class: "topOverlay" })
             ]),
