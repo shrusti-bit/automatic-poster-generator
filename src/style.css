@@ -226,19 +226,11 @@ input::placeholder, textarea::placeholder{color: rgba(156,163,175,0.7)}
   font-size: 20px;
 }
 
-/* Only center the QR column heading */
+/* Center the To Shelter + QR column headings */
+.details .detailCol:nth-child(2) h3,
 .details .detailCol:nth-child(3) h3{
   text-align: center;
   justify-content: center;
-}
-
-/* Center the "To Shelter" column (heading + value) */
-.details .detailCol:nth-child(2) h3{
-  text-align: center;
-  justify-content: center;
-}
-.details .detailCol:nth-child(2) .value{
-  text-align: center;
 }
 
 .detailCol h3{
