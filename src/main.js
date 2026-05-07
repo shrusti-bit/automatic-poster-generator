@@ -7,6 +7,8 @@ const A4_WIDTH_PX = 794;
 // Tuned to reduce unused vertical space vs full 96dpi A4 height.
 const A4_HEIGHT_PX = 1080;
 
+const BASE = import.meta.env.BASE_URL || "/";
+
 function ordinalSuffix(n) {
   const s = ["th", "st", "nd", "rd"];
   const v = n % 100;
@@ -137,7 +139,7 @@ function render() {
               state.topImageDataUrl
                 ? el("img", { src: state.topImageDataUrl, alt: "Top photo" })
                 : el("img", {
-                    src: "/invitation-template.png",
+                    src: `${BASE}invitation-template.png`,
                     alt: "Template photo"
                   }),
               el("div", { class: "topOverlay" })
@@ -153,7 +155,7 @@ function render() {
                       })
                     : el("img", {
                         class: "brandLogoImg defaultLogo",
-                        src: "/project-shelter-logo.jpg",
+                        src: `${BASE}project-shelter-logo.jpg`,
                         alt: "Project Shelter logo"
                       })
                 ])
