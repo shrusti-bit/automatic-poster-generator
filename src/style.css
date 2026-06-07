@@ -231,7 +231,7 @@ input::placeholder, textarea::placeholder{color: rgba(156,163,175,0.7)}
 .poster-page2 .detailCol .value{
   font-size: 19px;
   margin-top: 8px;
-  line-height: 1.32;
+  line-height: 1.48;
 }
 
 .poster-page2 .details .detailCol:nth-child(3) .value{
