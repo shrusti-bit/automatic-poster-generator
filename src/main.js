@@ -122,8 +122,8 @@ function buildPoster(variant, qrImgId) {
   const brandRow =
     variant === 2
       ? el("div", { class: "brandRow brandRowDual" }, [
-          el("div", { class: "brandLogo brandLogoHalf" }, [projectShelterLogo()]),
-          el("div", { class: "brandLogo brandLogoHalf" }, [partnerLogo()])
+          el("div", { class: "brandLogo brandLogoHalf brandLogoPrimary" }, [projectShelterLogo()]),
+          el("div", { class: "brandLogo brandLogoHalf brandLogoPartner" }, [partnerLogo()])
         ])
       : el("div", { class: "brandRow" }, [
           el("div", { class: "brandLogo" }, [projectShelterLogo()])
