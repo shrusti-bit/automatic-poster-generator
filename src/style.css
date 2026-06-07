@@ -178,9 +178,64 @@ input::placeholder, textarea::placeholder{color: rgba(156,163,175,0.7)}
 
 .poster .body{
   flex: 1;
+  min-height: 0;
   padding: 26px 54px 8px;
   display: flex;
   flex-direction: column;
+}
+
+.poster-page2 .topImage{
+  height: 390px;
+}
+
+.poster-page2 .body{
+  padding: 14px 48px 4px;
+}
+
+.poster-page2 .title{
+  margin-top: 6px;
+  font-size: 30px;
+}
+
+.poster-page2 .openingBlock{
+  margin-top: 8px;
+}
+
+.poster-page2 .openingGuest{
+  font-size: 22px;
+}
+
+.poster-page2 .subtitle{
+  margin-top: 8px;
+  font-size: 24px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.poster-page2 .collaboration{
+  margin-top: 6px;
+  font-size: 24px;
+  letter-spacing: .12em;
+}
+
+.poster-page2 .details{
+  margin-top: 10px;
+  gap: 20px;
+}
+
+.poster-page2 .qrBox{
+  width: 170px;
+  height: 170px;
+}
+
+.poster-page2 .qrBox img{
+  width: 152px;
+  height: 152px;
+}
+
+.poster-page2 #qrImg2{
+  min-width: 152px;
+  max-width: 152px;
 }
 
 .brandRow{
@@ -192,15 +247,33 @@ input::placeholder, textarea::placeholder{color: rgba(156,163,175,0.7)}
 }
 
 .brandRowDual{
-  gap: 24px;
-  max-width: 680px;
+  gap: 20px;
+  width: 100%;
+  max-width: 620px;
   margin-left: auto;
   margin-right: auto;
 }
 
 .brandLogoHalf{
-  width: 300px;
-  flex: 1;
+  flex: 1 1 0;
+  width: auto;
+  height: 72px;
+  min-width: 0;
+}
+
+.brandRowDual .brandLogoImg,
+.brandRowDual .partnerLogoImg{
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.brandRowDual .partnerLogoPlaceholder{
+  width: 100%;
+  height: 100%;
 }
 
 .brandLogo{
@@ -294,9 +367,9 @@ input::placeholder, textarea::placeholder{color: rgba(156,163,175,0.7)}
 .collaboration{
   margin: 10px 0 0;
   text-align: center;
-  font-size: 18px;
-  letter-spacing: .10em;
-  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: .12em;
+  font-weight: 800;
   color: #334155;
 }
 
@@ -367,6 +440,7 @@ input::placeholder, textarea::placeholder{color: rgba(156,163,175,0.7)}
 
 .footer{
   margin-top: auto;
+  flex-shrink: 0;
   height: 84px;
   background: linear-gradient(90deg, rgba(11,74,141,1), rgba(11,74,141,1));
   color:white;

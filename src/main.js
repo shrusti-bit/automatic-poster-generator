@@ -162,7 +162,10 @@ function buildPoster(variant, qrImgId) {
     ])
   );
 
-  return el("div", { class: "poster", id: variant === 1 ? "poster" : "poster2" }, [
+  return el("div", {
+    class: variant === 2 ? "poster poster-page2" : "poster",
+    id: variant === 1 ? "poster" : "poster2"
+  }, [
     el("div", { class: "topImage" }, [
       state.topImageDataUrl
         ? el("img", { src: state.topImageDataUrl, alt: "House photo" })
