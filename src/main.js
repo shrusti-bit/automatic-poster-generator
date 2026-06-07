@@ -4,7 +4,6 @@ import jsPDF from "jspdf";
 import QRCode from "qrcode";
 
 const A4_WIDTH_PX = 794;
-// Tuned to reduce unused vertical space vs full 96dpi A4 height.
 const A4_HEIGHT_PX = 1080;
 
 const BASE = import.meta.env.BASE_URL || "/";
@@ -65,12 +64,121 @@ const state = {
   email: "info@projectshelter.org.in",
   website: "www.projectshelter.org.in",
   topImageDataUrl: "",
-  logoDataUrl: ""
+  logoDataUrl: "",
+  openingLabel: "Opening by",
+  guestName: "Chandy Oommen, MLA",
+  collaborationPartner: "House Challenge",
+  partnerLogoDataUrl: ""
 };
 
 function escapeAttrValue(s) {
-  // Minimal escaping for use inside an attribute selector.
   return String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+function projectShelterLogo() {
+  if (state.logoDataUrl) {
+    return el("img", {
+      class: "brandLogoImg uploadedLogo",
+      src: state.logoDataUrl,
+      alt: "Logo"
+    });
+  }
+  return el("img", {
+    class: "brandLogoImg defaultLogo",
+    src: `${BASE}project-shelter-logo.jpg`,
+    alt: "Project Shelter logo"
+  });
+}
+
+function partnerLogo() {
+  if (state.partnerLogoDataUrl) {
+    return el("img", {
+      class: "brandLogoImg partnerLogoImg",
+      src: state.partnerLogoDataUrl,
+      alt: "Partner logo"
+    });
+  }
+  return el("div", { class: "partnerLogoPlaceholder", text: "Partner logo" });
+}
+
+function buildTitleNode(ordNumber, ordSuffix) {
+  return el("div", { class: "title" }, [
+    document.createTextNode(`${state.eventType.toUpperCase()} OF`),
+    document.createElement("br"),
+    document.createTextNode(`THE ${ordNumber}`),
+    el("sup", { text: ordSuffix }),
+    document.createTextNode(" HOUSE")
+  ]);
+}
+
+function buildPoster(variant, qrImgId) {
+  const houseNoNum = Number(state.houseNo || 0) || 0;
+  const ord = ordinalSuffix(houseNoNum);
+  const ordMatch = String(ord).match(/^(\d+)([a-z]+)$/i);
+  const ordNumber = ordMatch?.[1] ?? String(houseNoNum || "");
+  const ordSuffix = (ordMatch?.[2] ?? "").toUpperCase();
+  const subtitle = `A HOUSE FOR ${state.beneficiary.toUpperCase()}`;
+
+  const brandRow =
+    variant === 2
+      ? el("div", { class: "brandRow brandRowDual" }, [
+          el("div", { class: "brandLogo brandLogoHalf" }, [projectShelterLogo()]),
+          el("div", { class: "brandLogo brandLogoHalf" }, [partnerLogo()])
+        ])
+      : el("div", { class: "brandRow" }, [
+          el("div", { class: "brandLogo" }, [projectShelterLogo()])
+        ]);
+
+  const bodyChildren = [
+    brandRow,
+    buildTitleNode(ordNumber, ordSuffix)
+  ];
+
+  if (variant === 2) {
+    bodyChildren.push(
+      el("div", { class: "openingBlock" }, [
+        el("div", { class: "openingLabel", text: state.openingLabel || "Opening by" }),
+        el("div", { class: "openingGuest", text: state.guestName || "—" })
+      ])
+    );
+  }
+
+  bodyChildren.push(el("div", { class: "subtitle", text: subtitle }));
+
+  if (variant === 2 && (state.collaborationPartner || "").trim()) {
+    bodyChildren.push(
+      el("div", {
+        class: "collaboration",
+        text: `in collaboration with ${state.collaborationPartner.trim()}`
+      })
+    );
+  }
+
+  bodyChildren.push(
+    el("div", { class: "details" }, [
+      detailCol("Date & Time", formatDateTimeForPoster(state.dateTime) || "—"),
+      detailCol("To Shelter", state.address || "—"),
+      qrCol(qrImgId)
+    ])
+  );
+
+  return el("div", { class: "poster", id: variant === 1 ? "poster" : "poster2" }, [
+    el("div", { class: "topImage" }, [
+      state.topImageDataUrl
+        ? el("img", { src: state.topImageDataUrl, alt: "House photo" })
+        : el("img", {
+            src: `${BASE}house-placeholder.svg`,
+            alt: "House placeholder"
+          }),
+      el("div", { class: "topOverlay" })
+    ]),
+    el("div", { class: "body" }, bodyChildren),
+    el("div", { class: "footer" }, [
+      footerItem(state.phone),
+      footerItem(state.email),
+      footerItem(state.website)
+    ])
+  ]);
 }
 
 function render() {
@@ -80,22 +188,6 @@ function render() {
     active && typeof active.selectionStart === "number" && typeof active.selectionEnd === "number";
   const selectionStart = canRestoreSelection ? active.selectionStart : null;
   const selectionEnd = canRestoreSelection ? active.selectionEnd : null;
-
-  const houseNoNum = Number(state.houseNo || 0) || 0;
-  const ord = ordinalSuffix(houseNoNum);
-  const ordMatch = String(ord).match(/^(\d+)([a-z]+)$/i);
-  const ordNumber = ordMatch?.[1] ?? String(houseNoNum || "");
-  const ordSuffix = (ordMatch?.[2] ?? "").toUpperCase();
-
-  const titleNode = el("div", { class: "title" }, [
-    document.createTextNode(`${state.eventType.toUpperCase()} OF`),
-    document.createElement("br"),
-    document.createTextNode(`THE ${ordNumber}`),
-    el("sup", { text: ordSuffix }),
-    document.createTextNode(" HOUSE")
-  ]);
-
-  const subtitle = `A HOUSE FOR ${state.beneficiary.toUpperCase()}`;
 
   document.querySelector("#app").replaceChildren(
     el("div", { class: "shell" }, [
@@ -124,70 +216,47 @@ function render() {
             fieldText("Email", "email", state.email)
           ]),
           fieldText("Website", "website", state.website),
+          el("div", { class: "formSectionTitle", text: "Page 2 extras" }),
+          el("div", { class: "row" }, [
+            fieldText("Opening label", "openingLabel", "Opening by"),
+            fieldText("Guest name", "guestName", "Chandy Oommen, MLA")
+          ]),
+          fieldText("Collaboration partner", "collaborationPartner", "House Challenge"),
+          fieldFile("Partner logo (Page 2)", "partnerLogoDataUrl", "image/*"),
           el("div", { class: "actions" }, [
             el("button", {
               class: "btn",
-              id: "btnPng",
-              text: "Download PNG (A4)"
+              id: "btnPng1",
+              text: "Download Page 1 PNG"
             }),
             el("button", {
               class: "btn secondary",
+              id: "btnPng2",
+              text: "Download Page 2 PNG"
+            }),
+            el("button", {
+              class: "btn",
               id: "btnPdf",
-              text: "Download PDF (A4)"
+              text: "Download PDF (2 pages)"
             })
           ]),
           el("div", {
             class: "hint",
             text:
-              "Tip: paste a Google Maps link into “QR value”. If empty, the QR box will show a placeholder."
+              "Page 1 is the standard poster. Page 2 adds the guest, collaboration line, and partner logo."
           })
         ])
       ]),
       el("div", { class: "card" }, [
         el("h2", { text: "Preview (A4)" }),
         el("div", { class: "previewWrap" }, [
-          el("div", { class: "poster", id: "poster" }, [
-            el("div", { class: "topImage" }, [
-              state.topImageDataUrl
-                ? el("img", { src: state.topImageDataUrl, alt: "House photo" })
-                : el("img", {
-                    src: `${BASE}house-placeholder.svg`,
-                    alt: "House placeholder"
-                  }),
-              el("div", { class: "topOverlay" })
-            ]),
-            el("div", { class: "body" }, [
-              el("div", { class: "brandRow" }, [
-                el("div", { class: "brandLogo" }, [
-                  state.logoDataUrl
-                    ? el("img", {
-                        class: "brandLogoImg uploadedLogo",
-                        src: state.logoDataUrl,
-                        alt: "Logo"
-                      })
-                    : el("img", {
-                        class: "brandLogoImg defaultLogo",
-                        src: `${BASE}project-shelter-logo.jpg`,
-                        alt: "Project Shelter logo"
-                      })
-                ])
-              ]),
-              titleNode,
-              el("div", { class: "subtitle", text: subtitle }),
-              el("div", { class: "details" }, [
-                detailCol(
-                  "Date & Time",
-                  formatDateTimeForPoster(state.dateTime) || "—"
-                ),
-                detailCol("To Shelter", state.address || "—"),
-                qrCol()
-              ])
-            ]),
-            el("div", { class: "footer" }, [
-              footerItem(state.phone),
-              footerItem(state.email),
-              footerItem(state.website)
-            ])
+          el("div", { class: "previewPage" }, [
+            el("div", { class: "previewLabel", text: "Page 1" }),
+            buildPoster(1, "qrImg")
+          ]),
+          el("div", { class: "previewPage" }, [
+            el("div", { class: "previewLabel", text: "Page 2" }),
+            buildPoster(2, "qrImg2")
           ])
         ])
       ])
@@ -195,14 +264,17 @@ function render() {
   );
 
   wireActions();
-  refreshQr();
+  refreshQr("qrImg");
+  refreshQr("qrImg2");
 
-  // Fix poster dimensions (avoid device zoom affecting capture)
-  const poster = document.getElementById("poster");
-  poster.style.width = `${A4_WIDTH_PX}px`;
-  poster.style.height = `${A4_HEIGHT_PX}px`;
+  for (const id of ["poster", "poster2"]) {
+    const poster = document.getElementById(id);
+    if (poster) {
+      poster.style.width = `${A4_WIDTH_PX}px`;
+      poster.style.height = `${A4_HEIGHT_PX}px`;
+    }
+  }
 
-  // Mobile UX: preserve focus across rerenders so the keyboard doesn't dismiss.
   if (activeKey) {
     const next = document.querySelector(`[data-key="${escapeAttrValue(activeKey)}"]`);
     if (next && typeof next.focus === "function") {
@@ -216,7 +288,7 @@ function render() {
         try {
           next.setSelectionRange(selectionStart, selectionEnd);
         } catch {
-          // Some input types (e.g. datetime-local) don't support selection ranges.
+          // Some input types don't support selection ranges.
         }
       }
     }
@@ -230,13 +302,13 @@ function detailCol(title, value) {
   ]);
 }
 
-function qrCol() {
+function qrCol(qrImgId) {
   return el("div", { class: "detailCol" }, [
     el("h3", { text: "Scan for location" }),
     el("div", { class: "value" }, [
       el("div", { class: "qrBox" }, [
         el("img", {
-          id: "qrImg",
+          id: qrImgId,
           alt: "QR",
           src: ""
         })
@@ -340,8 +412,8 @@ async function fileToDataUrl(file) {
   return await p;
 }
 
-async function refreshQr() {
-  const img = document.getElementById("qrImg");
+async function refreshQr(qrImgId) {
+  const img = document.getElementById(qrImgId);
   if (!img) return;
 
   const value = (state.qrValue || "").trim();
@@ -390,7 +462,7 @@ async function capturePosterCanvas(posterEl) {
           if (img.decode) await img.decode();
           else await new Promise((r) => (img.onload = img.onerror = r));
         } catch {
-          // best-effort; html2canvas will still render what it can
+          // best-effort
         }
       })
     );
@@ -401,51 +473,71 @@ async function capturePosterCanvas(posterEl) {
   }
 }
 
-function wireActions() {
-  const btnPng = document.getElementById("btnPng");
-  const btnPdf = document.getElementById("btnPdf");
-  const poster = document.getElementById("poster");
+function addCanvasToPdf(pdf, canvas) {
+  const imgData = canvas.toDataURL("image/png");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const imgW = canvas.width;
+  const imgH = canvas.height;
+  const scale = Math.min(pageWidth / imgW, pageHeight / imgH);
+  const w = imgW * scale;
+  const h = imgH * scale;
+  const x = (pageWidth - w) / 2;
+  const y = (pageHeight - h) / 2;
+  pdf.addImage(imgData, "PNG", x, y, w, h);
+}
 
-  btnPng.addEventListener("click", async () => {
-    btnPng.disabled = true;
-    btnPdf.disabled = true;
+function wireActions() {
+  const btnPng1 = document.getElementById("btnPng1");
+  const btnPng2 = document.getElementById("btnPng2");
+  const btnPdf = document.getElementById("btnPdf");
+  const poster1 = document.getElementById("poster");
+  const poster2 = document.getElementById("poster2");
+
+  const setBusy = (busy) => {
+    btnPng1.disabled = busy;
+    btnPng2.disabled = busy;
+    btnPdf.disabled = busy;
+  };
+
+  btnPng1.addEventListener("click", async () => {
+    setBusy(true);
     try {
-      const canvas = await capturePosterCanvas(poster);
+      const canvas = await capturePosterCanvas(poster1);
       canvas.toBlob((blob) => {
         if (!blob) return;
-        downloadBlob(blob, `${safeName()}-A4.png`);
+        downloadBlob(blob, `${safeName()}-page1-A4.png`);
       }, "image/png");
     } finally {
-      btnPng.disabled = false;
-      btnPdf.disabled = false;
+      setBusy(false);
+    }
+  });
+
+  btnPng2.addEventListener("click", async () => {
+    setBusy(true);
+    try {
+      const canvas = await capturePosterCanvas(poster2);
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        downloadBlob(blob, `${safeName()}-page2-A4.png`);
+      }, "image/png");
+    } finally {
+      setBusy(false);
     }
   });
 
   btnPdf.addEventListener("click", async () => {
-    btnPng.disabled = true;
-    btnPdf.disabled = true;
+    setBusy(true);
     try {
-      const canvas = await capturePosterCanvas(poster);
-      const imgData = canvas.toDataURL("image/png");
-
+      const canvas1 = await capturePosterCanvas(poster1);
+      const canvas2 = await capturePosterCanvas(poster2);
       const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-
-      // Fit without distortion (preserve aspect ratio)
-      const imgW = canvas.width;
-      const imgH = canvas.height;
-      const scale = Math.min(pageWidth / imgW, pageHeight / imgH);
-      const w = imgW * scale;
-      const h = imgH * scale;
-      const x = (pageWidth - w) / 2;
-      const y = (pageHeight - h) / 2;
-      pdf.addImage(imgData, "PNG", x, y, w, h);
-      const blob = pdf.output("blob");
-      downloadBlob(blob, `${safeName()}-A4.pdf`);
+      addCanvasToPdf(pdf, canvas1);
+      pdf.addPage();
+      addCanvasToPdf(pdf, canvas2);
+      downloadBlob(pdf.output("blob"), `${safeName()}-A4-2pages.pdf`);
     } finally {
-      btnPng.disabled = false;
-      btnPdf.disabled = false;
+      setBusy(false);
     }
   });
 }
@@ -457,4 +549,3 @@ function safeName() {
 }
 
 render();
-
